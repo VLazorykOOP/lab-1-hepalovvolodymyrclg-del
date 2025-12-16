@@ -8,34 +8,82 @@
 
 #include <time.h>
 
+// Оголошуємо функції для їх використання
+bool IsError(int Data, int MaxX); // перевірка на вірно введені дані
+int ConsoleInputSizeArray(const int sizeMax); // Введення розміру масиву
+int ConsoleInputArray(int sizeMax, int A[]); // Введення масиву руками
+int MainInput();
+
+
 using namespace std;
 
 typedef double* pDouble;
-/*
-*   ConsoleInputArrayDouble
-*   
-*/
+//**********************************************************************
+// Введення розміру масиву з обмеженням максимальної кількості елементів
+//**********************************************************************
 int ConsoleInputSizeArray(const int sizeMax)
 {
     int size = 0; 
     do {
-        cout << " Input size Array ( 0< 1 < " << sizeMax << " ) ";
+        cout << "Input size Array ( 0 < n <= " << sizeMax << " ) n = ";
         cin >> size;
-    } while (size <= 0 || size >= sizeMax);
+
+    } while (not IsError(size, sizeMax));
     return size;
 }
-/*
-*   ConsoleInputArrayDouble
-*
-*/
-int ConsoleInputArray(int sizeMax, double A[])
+//*********************************************************
+// Перевірити чи введене ціле число
+//*********************************************************
+bool IsError(int Data, int MaxX)
 {
-    int size = ConsoleInputSizeArray(sizeMax);
-        for (int i = 0; i < size; i++) {
+    if (cin.fail())  // якщо введене не ціле число
+    {
+        cout << "*** Incorect, please make a new choice\n";
+        cin.clear();              // скинути стан помилки
+        cin.ignore(1000, '\n');   // очистити буфер
+    }
+    else if (MaxX > 0) // якщо ціле то перевірити 0 < Data < MaxX (MaxX = 0 не перевіряти)
+    {
+        if (Data >= 0 && Data < MaxX) {
+            return true; // Все Ок
+        }
+        else {
+            cout << "*** Incorect, please make a new choice\n";
+        }
+    }
+    return false; // Повторити ввод
+}
+//*********************************************************
+// Задати алгоритм отримання масиву
+//*********************************************************
+int MenuInput()
+{
+    int i;
+    do {
+        cout << "     Menu Input   \n";
+        cout << "    1.  Console all \n";
+        cout << "    2.  Console - size, array - random \n";
+        cout << "    3.  FileArray1.txt \n";
+        cout << "    0.  Exit \n";
+
+        cin >> i; // ввести позицію меню
+
+    } while (not IsError(i, 4));
+    return i;
+}
+//**********************************************************************
+// Введення заданого масива цілих чисел з консолі
+//**********************************************************************
+int ConsoleInputArray(int*& A, int sizeMax)
+{
+    int n = ConsoleInputSizeArray(sizeMax);
+    A = new int[n];
+    for (int i = 0; i < n; i++) {
         cout << " Array[ " << i << "] "; cin >> A[i];
     }
-    return size;
+    return n;
 }
+//**********************************************************************
 
 /*
 *   RndInputArrayDouble
@@ -169,89 +217,30 @@ void MenuTask()
     cout << "    5.  Exit \n";
 }
 
-void MenuInput()
-{
-    cout << "     Menu Input   \n";
-    cout << "    1.  Console all \n";
-    cout << "    2.  Console - size, array - random \n";
-    cout << "    3.  File 1.txt \n";
-    cout << "    4.  bb    \n";
-    cout << "    5.  Exit \n";
-}
-
-
-/*
-* Задано одновимірний масив А розміру 2N. 
-* Побудувати два масиви В і С розміру N, 
-* включивши  у масив В елементи масиву А з парними індексами,
-* а у С - з непарними.
-*****************
-*  A - in 
-*  B, C - out 
-*/
-void  TestVariant(int N, double* A, double* B, double* C) {
-    for (int i = 0; i < N; i++) {
-        B[i] = A[2 * i];
-        C[i] = A[2 * i + 1];
-    }
-}
-/*
-*  Task  Var
-* 
-* 
-*/
-void TaskV()
-{
-    char ch = '5';
-    do {
-        system("cls");
-        MenuTask();
-        ch = getchar();
-        getchar();
-            switch (ch) {
-             case '1': cout << " 1 "; break;
-             case '2': cout << " 2 "; break;
-            //
-            case '5': return;
-            }
-        cout << " Press any key and enter\n";
-        ch = getchar();
-        } while (ch != 27);
-    
-}
-
-void ArrayLocal()
-{
-    double A[1000], B[500], C[500];
-    int n;
-    char ch = '5';
-    do {
-        system("cls");
-        MenuTask();
-        ch = getchar();
-        getchar();
-        switch (ch) {
-        case '1': cout << " 1 "; break;
-        case '2': cout << " 2 "; break;
-            //
-        case '5': return;
-        }
-        cout << " Press any key and enter\n";
-        ch = getchar();
-    } while (ch != 27);
-
-}
-
-
 int main()
-{ 
-    
-    
-    
+{
+    int i;
+    int* B = nullptr;
+    int n = 0;
+    // Завдання 1, варіант 7
+    // Із одновимірного масиву А розміру N побудувати масив 
+    // В із елементів, які більші числа 10
+   
+    i = MenuInput(); // Вибор алгоритму роботи
+    n = ConsoleInputArray(B, 300);
+
+    for (int i = 0; i < n; i++)
+        cout << B[i] << " ";
+
+
+
+
+
+    /*
     const int MAX_SIZE = 560;
     std::cout << "Hello World!\n";
     ShowMainMenu();
-    /*
+    
     double A[MAX_SIZE], B[MAX_SIZE],C[MAX_SIZE];
     int n,m;
     n = RndInputArray(MAX_SIZE, A);
@@ -270,9 +259,9 @@ int main()
     ConsoleInputVector(MAX_SIZE, vA);
     for (auto v : vA) {
         cout << v << "   ";
-    }
-*/
-    TaskV();
+    } 
+
+    TaskV();*/
     return 1;
 
 }
