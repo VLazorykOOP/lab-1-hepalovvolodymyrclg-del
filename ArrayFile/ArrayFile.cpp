@@ -11,8 +11,11 @@
 // Оголошуємо функції для їх використання
 bool IsError(int Data, int MaxX); // перевірка на вірно введені дані
 int ConsoleInputSizeArray(const int sizeMax); // Введення розміру масиву
-int ConsoleInputArray(int sizeMax, int A[]); // Введення масиву руками
+int ConsoleInputArray(int sizeMax, int*& A); // Введення масиву руками
 int MainInput();
+int RndInputArray(int sizeMax, int*& A); // Введення масиву автоматично
+void WriteArrayTextFile(int n, int* arr, const char* fileName); // Запис масиву в текст. файл
+int ReadArrayTextFile(int*& arr, const char* fileName); // Читаємо текстовий файл
 
 
 using namespace std;
@@ -84,27 +87,55 @@ int ConsoleInputArray(int*& A, int sizeMax)
     return n;
 }
 //**********************************************************************
-
-/*
-*   RndInputArrayDouble
-*
-*/
-int RndInputArray(int sizeMax, double A[])
+// Введення заданого масива автоматично рандомно від 0 до 100
+//**********************************************************************
+int RndInputArray(int sizeMax, int*& A)
 {
     int size = ConsoleInputSizeArray(sizeMax);
-    int r1=0, r2=0;
-    srand(size);
+    int r1=0;
+    A = new int[size];
+    // виконуємо для того щоб не повторювалися числа які гернеруються рандомно
+    srand(time(nullptr));
 
     for (int i = 0; i < size; i++) {
         r1 = rand();
-        r2 = rand();
-        A[i] = 100.0 * r1;
-        A[i] = A[i] / (1.0 + r2);
-        cout << A[i] << "   ";
+        A[i] = r1 % 100;
     }
     return size;
 }
+//**************************************************************************
+// запис масива в текстовий файл
+//**************************************************************************
+void WriteArrayTextFile(int n, int* arr, const char* fileName)
+{
+    ofstream fout(fileName);
+    if (fout.fail()) return;
+    fout << n << endl;
+    for (int i = 0; i < n; i++) {
+        fout << arr[i] << "   ";
+    }
 
+    fout.close(); //
+}
+//**************************************************************************
+// читаємо масив з текстового файла
+//**************************************************************************
+int ReadArrayTextFile(int*& arr, const char* fileName)
+{
+    int size;
+    ifstream fin(fileName);
+    if (fin.fail()) return 0;
+    fin >> size;
+    arr = new int[size];
+
+    if (size <= 0) return 0;
+    for (int i = 0; i < size; i++)
+        fin >> arr[i];
+    fin.close();
+    return size;
+
+}
+//**************************************************************************
 int ConsoleInputDynamicArrayNew(int sizeMax, pDouble &pA)
 {
     int size = ConsoleInputSizeArray(sizeMax);
@@ -135,42 +166,6 @@ void ConsoleInputVector(int sizeMax, vector<double> &A)
         cout << " Array[ " << i << "] "; cin >> d; A.push_back(d);
     }
     return ;
-}
-
-
-/*
-*  WriteArrayTextFile 
-*
-*/
-
-void WriteArrayTextFile(int n, double *arr, const char *fileName )
-{
-    ofstream fout(fileName);
-    if (fout.fail()) return;
-    fout << n << endl;
-    for (int i = 0; i < n; i++)
-        fout << arr[i] << "   ";
-    fout.close(); //
-}
-/*
-*  ReadArrayTextFile
-*
-*/
-
-
-int ReadArrayTextFile(int n, double* arr, const char* fileName)
-{
-    int size;
-    ifstream fin(fileName);
-    if (fin.fail()) return 0;
-    fin >> size;
-    if (size <= 0) return 0;
-    if (size > n) size = n;   
-    for (int i = 0; i < n; i++)
-       fin>> arr[i];
-    fin.close();
-    return size;
-    
 }
 
 
@@ -218,19 +213,39 @@ void MenuTask()
 }
 
 int main()
-{
+{   
     int i;
     int* B = nullptr;
+    int* Rd = nullptr;
     int n = 0;
+    const char* txtFile="Array_1.txt";
+    
+  //  n = RndInputArray(300, B);
+  //  cout << "Array of " << n << " Ок " << endl;
+ //   for (int i = 0; i < n; i++)
+  //      cout << B[i] << " ";
+   // cout << endl << " Write to txt file " << endl;
+
+   // WriteArrayTextFile(n, B, txtFile);
+
+    n = ReadArrayTextFile(Rd, txtFile);
+    cout << "Array of " << n << " Ok " << endl;
+    for (int i = 0; i < n; i++)
+        cout << Rd[i] << " ";
+
+
+    return 1;
+
+}
+
     // Завдання 1, варіант 7
     // Із одновимірного масиву А розміру N побудувати масив 
     // В із елементів, які більші числа 10
    
-    i = MenuInput(); // Вибор алгоритму роботи
-    n = ConsoleInputArray(B, 300);
+    // i = MenuInput(); // Вибор алгоритму роботи
+   // n = ConsoleInputArray(B, 300);
 
-    for (int i = 0; i < n; i++)
-        cout << B[i] << " ";
+
 
 
 
@@ -262,9 +277,7 @@ int main()
     } 
 
     TaskV();*/
-    return 1;
 
-}
 
 // Запуск программы: CTRL+F5 или меню "Отладка" > "Запуск без отладки"
 // Отладка программы: F5 или меню "Отладка" > "Запустить отладку"
